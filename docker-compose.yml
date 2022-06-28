@@ -1,0 +1,61 @@
+version: "3"
+services:
+  fullstack-mysql:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: full_db_mysql
+    build:
+      context: ./data
+      dockerfile: Dockerfile
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_HOST: "fullstack-mysql"
+      MYSQL_USER: "bacem"
+      MYSQL_PASSWORD: "root"
+      
+      MYSQL_ROOT_PASSWORD: "root"
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_NICE
+    networks:
+      - fullstack
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_container
+    depends_on:
+      - fullstack-mysql
+    environment:
+      PMA_HOST: "fullstack-mysql" # Note the "fullstack-mysql". Must be the name of the what you used as the mysql service.
+      # PMA_USER: "root"
+      PMA_PORT: "3306"
+    ports:
+      - 9090:80
+    restart: always
+    networks:
+      - fullstack
+  app:
+    container_name: api_cars
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 8888:8888
+    restart: on-failure
+    volumes:
+      - ./:/build/assets/
+    depends_on:
+      - fullstack-mysql
+    networks:
+      - fullstack
+
+volumes:
+  api:
+  database_mysql:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  fullstack:
+    driver: bridge

@@ -1,12 +1,17 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
 
+	model "github.com/Noexperience-Team/carsrent/src/Models"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"gopkg.in/yaml.v2"
 )
+
+var DB *gorm.DB
 
 type DBConfig struct {
 	Database struct {
@@ -44,9 +49,9 @@ func NewConfig(configPath string) (*DBConfig, error) {
 
 // func Connect to the data base it create a connection with the data base
 // pass database variables into func in order to use it anywhere
-func Connect() (*gorm.DB, error) {
+func Connect(pathToConfig string) {
 
-	cfg, err := NewConfig("./config/config.prod.yml")
+	cfg, err := NewConfig(pathToConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,9 +61,13 @@ func Connect() (*gorm.DB, error) {
 	dbProjectJson := cfg.Database.DbName
 	host := cfg.Database.Host
 	port := cfg.Database.Port
-	db, err := gorm.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+host+":"+port+")/"+dbProjectJson+"?parseTime=true")
+	connection, err := gorm.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+host+":"+port+")/"+dbProjectJson+"?parseTime=true")
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return db, nil
+	DB = connection
+	connection.AutoMigrate(&model.Car{})
+	//connection.Model(&model.Rent{}).AddForeignKey("car_id", "cars(id)", "CASCADE", "CASCADE")
+	fmt.Println("Creating tabels ")
+
 }

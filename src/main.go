@@ -15,8 +15,8 @@ import (
 	"syscall"
 	"time"
 
-	router "github.com/Noexperience-Team/carrent/src/Routes"
-	db "github.com/Noexperience-Team/carrent/src/database"
+	db "github.com/Noexperience-Team/carsrent/src/Repository"
+	router "github.com/Noexperience-Team/carsrent/src/Routers"
 	"gopkg.in/yaml.v2"
 )
 
@@ -111,6 +111,7 @@ func (config Config) Run() {
 	// Define server options
 	server := &http.Server{
 		Handler:      router.NewRouter(),
+		Addr:         ":8888",
 		ReadTimeout:  config.Server.Timeout.Read * time.Second,
 		WriteTimeout: config.Server.Timeout.Write * time.Second,
 		IdleTimeout:  config.Server.Timeout.Idle * time.Second,
@@ -121,7 +122,9 @@ func (config Config) Run() {
 
 	// Alert the user that the server is starting
 	log.Printf("Server is starting on %s\n", server.Addr)
-
+	time.Sleep(30 * time.Second)
+	log.Printf("connecting to the data base \n")
+	db.Connect("./config/config.prod.yml")
 	// Run the server on a new goroutine
 	go func() {
 		//time.Sleep(1 * time.Minute)
@@ -153,7 +156,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.Connect()
 
 	// Run the server
 	cfg.Run()

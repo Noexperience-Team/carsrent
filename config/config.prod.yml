@@ -1,0 +1,16 @@
+server:
+  type: http
+  host: localhost
+  port: 8888
+  timeout:
+    server: 3000
+    read: 6000
+    write: 1000
+    idle: 5
+database:
+  type: mysql
+  host: fullstack-mysql
+  port: 3306
+  user: bacem
+  password: root
+  dbName: Cars

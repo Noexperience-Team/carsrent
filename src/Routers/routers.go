@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	controler "github.com/Noexperience-Team/carrent/src/Controlers"
+	controler "github.com/Noexperience-Team/carsrent/src/Controlers"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
@@ -24,7 +24,8 @@ func NewRouter() *mux.Router {
 	})
 
 	appRouter.HandleFunc("/cars", controler.GetCars).Methods("GET")
-
+	appRouter.HandleFunc("/cars", controler.AddCars).Methods("POST", "OPTION")
+	appRouter.HandleFunc("/cars/{registration}/{rent}", controler.UpdateCarRentStatus).Methods("POST", "OPTION")
 	r.Use(cors)
 	return r
 }
