@@ -8,7 +8,7 @@ __________________________
     - cars rent backend app
 ### For building & running the container:
 
-    -type $make build 
+    -type $ make build 
 
 #### For running the container :
 
